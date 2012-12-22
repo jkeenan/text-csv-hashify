@@ -194,7 +194,7 @@ Text::CSV::Hashify object.
 sub new {
     my ($class, $args) = @_;
     croak "Argument to 'new()' must be hashref"
-        unless (reftype($args) eq 'HASH');
+        unless (ref($args) and reftype($args) eq 'HASH');
     for my $el ( qw| file key | ) {
         croak "Argument to 'new()' must have '$el' element"
             unless $args->{$el};

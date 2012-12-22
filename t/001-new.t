@@ -29,6 +29,19 @@ my ($obj, $source, $key, $href, $k);
     $key = 'id';
     local $@;
     eval {
+        $obj = Text::CSV::Hashify->new( [
+            'file', $source, 'key', $key,
+        ] );
+    };
+    like($@, qr/^Argument to 'new\(\)' must be hashref/,
+        "'new()' died to lack of hashref as argument");
+}
+
+{
+    $source = "./t/data/names.csv";
+    $key = 'id';
+    local $@;
+    eval {
         $obj = Text::CSV::Hashify->new( {
             file    => $source,
         } );
