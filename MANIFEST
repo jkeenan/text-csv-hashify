@@ -5,7 +5,10 @@ Makefile.PL
 MANIFEST
 README
 README.md
-t/001_functional.t
+t/000-test-prep.t
+t/001-new.t
+t/002-functional.t
+t/data/dupe_field_names.csv
 t/data/dupe_key_names.csv
 t/data/names.csv
 Todo
