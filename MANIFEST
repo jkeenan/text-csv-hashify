@@ -8,6 +8,7 @@ README.md
 t/000-test-prep.t
 t/001-new.t
 t/002-functional.t
+t/003-methods.t
 t/data/dupe_field_names.csv
 t/data/dupe_key_names.csv
 t/data/names.csv
