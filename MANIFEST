@@ -1,8 +1,11 @@
+Changes
+lib/Text/CSV/Hashify.pm
+LICENSE
+Makefile.PL
 MANIFEST
 README
-LICENSE
+README.md
+t/001_functional.t
+t/data/dupe_key_names.csv
+t/data/names.csv
 Todo
-Changes
-Makefile.PL
-lib/Text/CSV/Hashify.pm
-t/001_load.t
