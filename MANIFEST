@@ -3,7 +3,6 @@ lib/Text/CSV/Hashify.pm
 LICENSE
 Makefile.PL
 MANIFEST
-README
 README.md
 t/000-test-prep.t
 t/001-new.t
