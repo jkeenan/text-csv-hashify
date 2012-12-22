@@ -8,37 +8,41 @@ use Test::More qw(no_plan); # tests => 2;
 use lib ('./lib');
 use Text::CSV::Hashify;
 
-my ($source, $key, $href, $k);
-#{
-#    $source = "./t/data/dupe_key_names.csv";
-#    ok( (-f $source), "Able to locate $source for testing" );
-#    $key = 'id';
-#
-#    local $@;
-#    eval { $href = hashify($source, $key); };
-#    $k = 4;
-#    like($@,
-#        qr/Cannot hashify $source; key '$k' is duplicated/,
-#        "Failure due to duplicate key corrected detected"
-#    );
-#}
-#
-##    $hash_ref = hashify('/path/to/file.csv', 'primary_key');
-##id,ssn,first_name,last_name,address,city,state,zip
-##1,999-99-9999,Alice,Zoltan,"360 5 Avenue, Suite 1299","New York","NY",10001
-#{
-#    $source = "./t/data/names.csv";
-#    ok( (-f $source), "Able to locate $source for testing" );
-#    $key = 'id';
-#
-#    local $@;
-#    eval { $href = hashify($source, $key); };
-#    ok(! $@, "hashify() did not die");
-#    ok($href, "hashify() returned true value");
-#    is(reftype($href), 'HASH', "hashify() returned hash reference");
-#    $k = 12;
-#    is(scalar(keys(%$href)), $k, "Got $k elements in hash");
-#}
+my ($obj, $source, $key, $href, $k);
 
-pass($0);
+$source = "./t/data/names.csv";
+$key = 'id';
 
+{
+    local $@;
+    eval { $href = hashify($source); };
+    like($@, qr/^'hashify\(\)' must have two arguments/,
+        "'hashify()' failed due to insufficient number of arguments");
+}
+    
+{
+    local $@;
+    eval { $href = hashify($source, ''); };
+    $k = 1;
+    like($@, qr/^'hashify\(\)' argument at index '$k' not true/,
+        "'hashify()' failed due to non-true argument");
+}
+    
+{
+    $source = "./t/data/names.csv";
+    $key = 'id';
+
+    local $@;
+    eval { $href = hashify($source, $key); };
+    is($@, '', "'hashify()' completed without error");
+    ok($href, "'hashify()' returned true value");
+    is(reftype($href), 'HASH', "'hashify()' returned hash reference"); 
+
+    my $obj = Text::CSV::Hashify->new( {
+        file    => $source,
+        key     => $key,
+    } );
+    my $oo_href = $obj->all();
+    is_deeply($href, $oo_href,
+        "'hashify()' and 'all()' returned same hash");
+}

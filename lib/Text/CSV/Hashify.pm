@@ -12,22 +12,6 @@ BEGIN {
     @EXPORT      = qw( hashify );
 }
 
-
-
-
-#sub new
-#{
-#        my ($class, %parameters) = @_;
-#
-#        my $self = bless ({}, ref ($class) || $class);
-#
-#        return $self;
-#}
-
-
-#################### main pod documentation begin ###################
-
-
 =head1 NAME
 
 Text::CSV::Hashify - Turn a CSV file into a Perl hash
@@ -127,6 +111,22 @@ Function takes two arguments:  path to CSV file; field in that file which
 serves as primary key.
 
 Returns a reference to a hash of hash reference.
+
+=cut
+
+sub hashify {
+    croak "'hashify()' must have two arguments"
+        unless @_ == 2;
+    my @args = @_;
+    for (my $i=0;$i<=$#args;$i++) {
+        croak "'hashify()' argument at index '$i' not true" unless $args[$i];
+    }
+    my $obj = Text::CSV::Hashify->new( {
+        file    => $args[0],
+        key     => $args[1],
+    } );
+    return $obj->all();
+}
 
 =head1 OBJECT-ORIENTED INTERFACE
 
@@ -241,23 +241,147 @@ sub new {
 
 =head2 C<all()>
 
-    $hash_ref       = $obj->all;
+=over 4
+
+=item * Purpose
+
+Get hash representation of CSV input file.
+
+=item * Arguments
+
+    $hash_ref = $obj->all;
+
+=item * Return Value
+
+Hash reference representing all data records in the CSV input file.
+
+=item * Comment
+
+Return value is equivalent to that of C<hashify()>.
+
+=back
+
+=cut
+
+sub all {
+    my ($self) = @_;
+    return $self->{all};
+}
 
 =head2 C<fields()>
 
-    $fields_ref     = $obj->fields;
+=over 4
+
+=item * Purpose
+
+Get a list of the fields in the CSV source.
+
+=item * Arguments
+
+    $fields_ref = $obj->fields;
+
+=item * Return Value
+
+Array reference.
+
+=item * Comment
+
+If any field names are duplicate, you will not get this far, as C<new()> would
+have died.
+
+=back
+
+=cut
+
+sub fields {
+    my ($self) = @_;
+    return $self->{fields};
+}
 
 =head2 C<record()>
 
-    $record_ref     = $obj->record('value_of_key');
+=over 4
+
+=item * Purpose
+
+Get a hash representing one record in the CSV input file.
+
+=item * Arguments
+
+    $record_ref = $obj->record('value_of_key');
+
+One argument: the value in the record in the column serving as unique key.
+
+=item * Return Value
+
+Hash reference.
+
+=back
+
+=cut
+
+sub record {
+    my ($self, $key) = @_;
+    croak "Argument to 'record()' either not defined or non-empty"
+        unless (defined $key and $key ne '');
+    return $self->{all}->{$key};
+}
 
 =head2 C<datum()>
 
-    $datum          = $obj->datum('value_of_key', 'field');
+=over 4
 
-    # arrayref of fields input
-    # hashref of specified record
-    # value of one field in one record
+=item * Purpose
+
+Get value of one field in one record.
+
+=item * Arguments
+
+    $datum = $obj->datum('value_of_key', 'field');
+
+List of two arguments: the value in the record in the column serving as unique
+key; the name of the field.
+
+=item * Return Value
+
+Scalar.
+
+=back
+
+=cut
+
+sub datum {
+    my ($self, @args) = @_;
+    croak "'datum()' needs two arguments" unless @args == 2;
+    for (my $i=0;$i<=$#args;$i++) {
+        croak "Argument to 'datum()' at index '$i' either not defined or non-empty"
+        unless ((defined($args[$i])) and ($args[$i] ne ''));
+    }
+    return $self->{all}->{$args[0]}->{$args[1]};
+}
+
+=over 4
+
+=item * Purpose
+
+Get a list of all unique keys found in the input file.
+
+=item * Arguments
+
+    $keys_ref = $obj->keys;
+
+=item * Return Value
+
+Array reference.
+
+=back
+
+=cut
+
+sub keys {
+    my ($self) = @_;
+    return $self->{keys};
+}
 
 =head1 AUTHOR
 
