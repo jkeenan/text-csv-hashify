@@ -9,6 +9,7 @@ t/001-new.t
 t/002-functional.t
 t/003-methods.t
 t/004-passthru.t
+t/005-aoh.t
 t/data/dupe_field_names.csv
 t/data/dupe_key_names.csv
 t/data/names.csv

@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 use Scalar::Util qw( reftype looks_like_number );
-use Test::More qw(no_plan); # tests => 2;
+use Test::More tests => 6;
 use lib ('./lib');
 use Text::CSV::Hashify;
 

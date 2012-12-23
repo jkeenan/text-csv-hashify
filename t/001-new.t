@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 use Scalar::Util qw( reftype looks_like_number );
-use Test::More qw(no_plan); # tests => 2;
+use Test::More tests => 24;
 use lib ('./lib');
 use Text::CSV::Hashify;
 
@@ -95,21 +95,21 @@ my ($obj, $source, $key, $k, $limit);
         "'new()' died due to bad argument for 'format' option");
 }
 
-{
-    $source = "./t/data/names.csv";
-    $key = 'id';
-    local $@;
-    $k = 'aoh';
-    eval {
-        $obj = Text::CSV::Hashify->new( {
-            file    => $source,
-            key     => $key,
-            format  => $k,
-        } );
-    };
-    like($@, qr/^Array of hashes not yet implemented/,
-        "Storage in array of hashes not yet implemented");
-}
+#{
+#    $source = "./t/data/names.csv";
+#    $key = 'id';
+#    local $@;
+#    $k = 'aoh';
+#    eval {
+#        $obj = Text::CSV::Hashify->new( {
+#            file    => $source,
+#            key     => $key,
+#            format  => $k,
+#        } );
+#    };
+#    like($@, qr/^Array of hashes not yet implemented/,
+#        "Storage in array of hashes not yet implemented");
+#}
 
 {
     $source = "./t/data/names.csv";
@@ -171,6 +171,7 @@ my ($obj, $source, $key, $k, $limit);
     is($@, '', "Correct call to 'new()'");
     ok($obj, "'new()' returned true value");
     isa_ok($obj, 'Text::CSV::Hashify');
+    is(reftype($obj->{all}), 'HASH', "Record data stored as hash");
 }
 
 {   # Correct call to new() with 'max_rows' option
@@ -188,7 +189,7 @@ my ($obj, $source, $key, $k, $limit);
     is($@, '', "Correct call to 'new()'");
     ok($obj, "'new()' returned true value");
     isa_ok($obj, 'Text::CSV::Hashify');
-    is(scalar(@{$obj->{keys}}), $limit,
+    is(scalar keys (%{$obj->{all}}), $limit,
         "'new()' parsed only '$limit' records requested");
 }
 
@@ -207,7 +208,7 @@ my ($obj, $source, $key, $k, $limit);
     is($@, '', "Correct call to 'new()'");
     ok($obj, "'new()' returned true value");
     isa_ok($obj, 'Text::CSV::Hashify');
-    is(scalar(@{$obj->{keys}}), 12,
+    is(scalar keys (%{$obj->{all}}), 12,
         "Value '$limit' of 'max_rows' option ignored; not enough records in '$source'");
 }
 

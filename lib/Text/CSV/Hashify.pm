@@ -57,22 +57,48 @@ records is non-trivial.  Fortunately, in Perl this parsing is well handled by
 CPAN distribution Text::CSV.  This permits us to address more specific data
 manipulation problems by building modules on top of Text::CSV.
 
+B<Note:>  In this document we will use I<CSV> as a catch-all for tab-delimited
+files, pipe-delimited files, and so forth.  Please refer to the documentation
+for Text::CSV to learn how to handle field separator characters other than the
+comma.
+
+=head2 Primary Case: CSV (with primary key) to Hash of Hashes
+
 Text::CSV::Hashify is designed for the case where you simply want to turn a
-CSV file into a Perl hash.  Not just any CSV file, of course, but a CSV file
-(a) whose first record is a list of fields in the ancestral database table and
-(b) one field (column) of which functions as a unique, primary key.
-Text::CSV::Hashify turns that kind of CSV file into one big hash where
-elements are keyed on the entries in the designated primary key field and
-where the value for each element is a hash reference of all the data in a
+CSV file into a Perl hash.  In particular, it is designed for the case where
+(a) the CSV file's first record is a list of fields in the ancestral database
+table and (b) one field (column) of which functions as a B<primary key>,
+I<i.e.,> each record's entry in that field is distinct from every other
+record's entry therein.
+
+Text::CSV::Hashify turns that kind of CSV file into one big hash of hashes.
+Elements of this hash are keyed on the entries in the designated primary key
+field and the value for each element is a hash reference of all the data in a
 particular database record (including the primary key field and its value).
+
+=head2 Secondary Case: CSV (lacking primary key) to Array of Hashes
+
+You may, however, encounter cases where a CSV file's header row contains the
+list of database fields but no field is capable of serving as a primary key,
+I<i.e.,> there is no field in which the entry for that field in any record is
+guaranteed to be distinct from the entries in that field for all other
+records.
+
+In this case, while an individual record can be turned into a hash,
+the CSV file as a whole cannot accurately be turned into a hash of hashes.  As
+a fallback, Text::CSV::Hashify can, upon request, turn this into an array of
+hashes.  In this case, you will not be able to look up a particular record by
+its primary key.  You will instead have to know its index position within the
+array (which is equivalent to knowing its record number in the original CSV
+file minus C<1>).
 
 =head2 Interfaces
 
 Text::CSV::Hashify provides two interfaces: one functional, one
 object-oriented.
 
-Use the functional interface when all you want is to turn a standard CSV file
-into a hash.
+Use the functional interface when all you want is to turn a CSV file with a
+primary key field into a hash of hashes.
 
 Use the object-oriented interface for any more sophisticated manipulation of
 the CSV file.  This includes:
@@ -88,6 +114,11 @@ separator character other than a comma.
 
 Selection of a limited number of records from the CSV file, rather than
 slurping the whole file into your in-memory hash.
+
+=item * Array of hash references format
+
+Probably better than the default hash of hash references format when the CSV
+file has no field able to serve as a primary key.
 
 =item * Metadata
 
@@ -110,7 +141,7 @@ Text::CSV::Hashify by default exports one function: C<hashify()>.
 Function takes two arguments:  path to CSV file; field in that file which
 serves as primary key.
 
-Returns a reference to a hash of hash reference.
+Returns a reference to a hash of hash references.
 
 =cut
 
@@ -168,16 +199,20 @@ Optional elements are:
 
 =item * C<format>
 
-String; possible values are C<hoh> and C<aoh>.  Defaults to C<hoh> (hash of
-hashes).  C<aoh> (array of hashes -- not yet implemented).
+String: possible values are C<hoh> and C<aoh>.  Defaults to C<hoh> (hash of
+hashes).  C<new()> will fail if the same value is encountered in more than one
+record's entry in the C<key> column.  So if you know in advance that your data
+cannot meet this condition, explicitly select C<format =E<gt> aoh>.
 
 =item * C<max_rows>
 
-Number.  Provide this if you do not wish to populate the hash with all data
+Number: provide this if you do not wish to populate the hash with all data
 records from the CSV file.  (Will have no effect if the number provided is
 greater than or equal to the number of data records in the CSV file.) 
 
 =item * Any option available to Text::CSV
+
+See documentation for either Text::CSV or Text::CSV_XS.
 
 =back
 
@@ -210,8 +245,6 @@ sub new {
     if ($args->{format} and ($args->{format} !~ m/^(?:h|a)oh$/i) ) {
         croak "Entry '$args->{format}' for format is invalid'";
     }
-    croak "Array of hashes not yet implemented"
-        if ($args->{format} and ($args->{format}=~ m/aoh/i));
 
     $data{format} = delete $args->{format} || 'hoh';
 
@@ -243,26 +276,40 @@ sub new {
     }
     $data{fields} = $header_ref;
     $csv->column_names(@{$header_ref});
+
+    # 'hoh format
     my %keys_seen;
     my @keys_list = ();
     my %parsed_data;
+    # 'aoh' format
+    my @parsed_data;
+
     PARSE_FILE: while (my $record = $csv->getline_hr($IN)) {
         my $kk = $record->{$data{key}};
-        if ($keys_seen{$kk}) {
+        if ($data{format} eq 'hoh' and $keys_seen{$kk}) {
             croak "Key '$kk' already seen";
         }
         else {
-            $keys_seen{$kk}++;
-            push @keys_list, $kk;
-            $parsed_data{$kk} = $record;
-            last PARSE_FILE if (
-                defined $data{max_rows} and
-                @keys_list == $data{max_rows}
-            );
+            if ($data{format} eq 'hoh') {
+                $keys_seen{$kk}++;
+                push @keys_list, $kk;
+                $parsed_data{$kk} = $record;
+                last PARSE_FILE if (
+                    defined $data{max_rows} and
+                    scalar(keys %parsed_data) == $data{max_rows}
+                );
+            }
+            else { # format: 'aoh'
+                push @parsed_data, $record;
+                last PARSE_FILE if (
+                    defined $data{max_rows} and
+                    scalar(@parsed_data) == $data{max_rows}
+                );
+            }
         }
     }
-    $data{all} = \%parsed_data;
-    $data{keys} = \@keys_list;
+    $data{all} = ($data{format} eq 'aoh') ? \@parsed_data : \%parsed_data;
+    $data{keys} = \@keys_list if $data{format} eq 'hoh';
     $data{csv} = $csv;
     while (my ($k,$v) = each %{$args}) {
         $data{$k} = $v;
@@ -341,7 +388,10 @@ Get a hash representing one record in the CSV input file.
 
     $record_ref = $obj->record('value_of_key');
 
-One argument: the value in the record in the column serving as unique key.
+One argument.  In the default case (C<format =E<gt> 'hoh'>), this argument is the value in the record in the column serving as unique key.
+
+In the C<format =E<gt> 'aoh'> case, this will be index position of the data record
+in the array.  (The header row will be at index C<0>.)
 
 =item * Return Value
 
@@ -355,7 +405,9 @@ sub record {
     my ($self, $key) = @_;
     croak "Argument to 'record()' either not defined or non-empty"
         unless (defined $key and $key ne '');
-    return $self->{all}->{$key};
+    ($self->{format} eq 'aoh')
+        ? return $self->{all}->[$key]
+        : return $self->{all}->{$key};
 }
 
 =head2 C<datum()>
@@ -388,8 +440,12 @@ sub datum {
         croak "Argument to 'datum()' at index '$i' either not defined or non-empty"
         unless ((defined($args[$i])) and ($args[$i] ne ''));
     }
-    return $self->{all}->{$args[0]}->{$args[1]};
+    ($self->{format} eq 'aoh')
+        ? return $self->{all}->[$args[0]]->{$args[1]}
+        : return $self->{all}->{$args[0]}->{$args[1]};
 }
+
+=head2 C<keys()>
 
 =over 4
 
@@ -405,13 +461,23 @@ Get a list of all unique keys found in the input file.
 
 Array reference.
 
+=item * Comment
+
+If you have selected C<format =E<gt> 'aoh'> in the options to C<new()>, the
+C<keys> method is inappropriate and will cause your program to die.
+
 =back
 
 =cut
 
 sub keys {
     my ($self) = @_;
-    return $self->{keys};
+    if (exists $self->{keys}) {
+        return $self->{keys};
+    }
+    else {
+        croak "'keys()' method not appropriate when 'format' is 'aoh'";
+    }
 }
 
 =head1 AUTHOR
