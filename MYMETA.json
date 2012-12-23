@@ -32,10 +32,11 @@
       },
       "runtime" : {
          "requires" : {
-            "Test::Simple" : "0.44"
+            "Test::Simple" : "0.44",
+            "Text::CSV" : "0"
          }
       }
    },
    "release_status" : "stable",
-   "version" : "0.01"
+   "version" : "0.02"
 }

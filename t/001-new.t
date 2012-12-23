@@ -80,6 +80,37 @@ my ($obj, $source, $key, $href, $k);
 }
 
 {
+    $source = "./t/data/names.csv";
+    $key = 'id';
+    local $@;
+    $k = 'xyz';
+    eval {
+        $obj = Text::CSV::Hashify->new( {
+            file    => $source,
+            key     => $key,
+            format  => $k,
+        } );
+    };
+    like($@, qr/^Entry '$k' for format is invalid/,
+        "'new()' died due to bad argument for 'format' option");
+}
+
+{
+    $source = "./t/data/names.csv";
+    $key = 'id';
+    local $@;
+    $k = 'aoh';
+    eval {
+        $obj = Text::CSV::Hashify->new( {
+            file    => $source,
+            key     => $key,
+            format  => $k,
+        } );
+    };
+    like($@, qr/^Array of hashes not yet implemented/,
+        "Storage in array of hashes not yet implemented");
+}
+{
     $source = "./t/data/dupe_field_names.csv";
     $key = 'id';
     local $@;
@@ -123,6 +154,8 @@ my ($obj, $source, $key, $href, $k);
     ok($obj, "'new()' returned true value");
     isa_ok($obj, 'Text::CSV::Hashify');
 }
+
+
 __END__
 #    $hash_ref = hashify('/path/to/file.csv', 'primary_key');
 #id,ssn,first_name,last_name,address,city,state,zip

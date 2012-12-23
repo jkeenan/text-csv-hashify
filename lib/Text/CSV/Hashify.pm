@@ -7,7 +7,7 @@ use Text::CSV;
 BEGIN {
     use Exporter ();
     use vars qw($VERSION @ISA @EXPORT);
-    $VERSION     = '0.01';
+    $VERSION     = '0.02';
     @ISA         = qw(Exporter);
     @EXPORT      = qw( hashify );
 }
@@ -26,7 +26,7 @@ Text::CSV::Hashify - Turn a CSV file into a Perl hash
     use Text::CSV::Hashify;
     $obj = Text::CSV::Hashify->new( {
         file        => '/path/to/file.csv',
-        key => 'id',
+        key         => 'id',
         format      => 'hoh', # hash of hashes, which is default
         max_rows    => 20,    # number of records to read; defaults to all
         ... # other key-value pairs possible for Text::CSV
@@ -201,6 +201,12 @@ sub new {
     }
     croak "Cannot locate file '$args->{file}'"
         unless (-f $args->{file});
+    if ($args->{format} and ($args->{format} !~ m/^(?:h|a)oh$/i) ) {
+        croak "Entry '$args->{format}' for format is invalid'";
+    }
+    croak "Array of hashes not yet implemented"
+        if $args->{format} =~ m/aoh/i;
+    $args->{format} ||= 'hoh';
 
     my %data;
 

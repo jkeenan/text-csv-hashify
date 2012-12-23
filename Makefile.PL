@@ -10,5 +10,6 @@ WriteMakefile(
     ABSTRACT     => 'Turn a CSV file into a Perl hash',
     PREREQ_PM    => {
                      'Test::Simple' => 0.44,
+                     'Text::CSV' => 0,
                     },
 );
