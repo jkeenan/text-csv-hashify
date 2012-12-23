@@ -1,5 +1,9 @@
 Revision history for Perl module Text::CSV::Hashify
 
+0.02 Sat Dec 22 21:10:15 EST 2012
+    - Get options, including those passed through to Text::CSV::new(),
+      working.
+
 0.01 Fri Dec 21 22:32:58 2012
     - original version; created by ExtUtils::ModuleMaker 0.51
 
