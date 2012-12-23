@@ -1,5 +1,5 @@
 # perl
-# t/001_functional.t - check functional interface
+# t/002_functional.t - check functional interface
 use strict;
 use warnings;
 use Carp;

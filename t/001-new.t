@@ -1,5 +1,5 @@
 # perl
-# t/002-new.t - check constructor
+# t/001-new.t - check constructor
 use strict;
 use warnings;
 use Carp;
@@ -94,22 +94,6 @@ my ($obj, $source, $key, $k, $limit);
     like($@, qr/^Entry '$k' for format is invalid/,
         "'new()' died due to bad argument for 'format' option");
 }
-
-#{
-#    $source = "./t/data/names.csv";
-#    $key = 'id';
-#    local $@;
-#    $k = 'aoh';
-#    eval {
-#        $obj = Text::CSV::Hashify->new( {
-#            file    => $source,
-#            key     => $key,
-#            format  => $k,
-#        } );
-#    };
-#    like($@, qr/^Array of hashes not yet implemented/,
-#        "Storage in array of hashes not yet implemented");
-#}
 
 {
     $source = "./t/data/names.csv";
