@@ -1,8 +1,10 @@
+.gitignore
 Changes
 lib/Text/CSV/Hashify.pm
 LICENSE
 Makefile.PL
 MANIFEST
+MANIFEST.SKIP
 README.md
 t/000-test-prep.t
 t/001-new.t

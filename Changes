@@ -1,5 +1,8 @@
 Revision history for Perl module Text::CSV::Hashify
 
+0.03 Sun Dec 23 12:23:42 EST 2012
+    - Get "format => 'aoh'" option working and tested.
+
 0.02 Sat Dec 22 21:10:15 EST 2012
     - Get options, including those passed through to Text::CSV::new(),
       working.
