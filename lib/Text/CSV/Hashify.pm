@@ -193,6 +193,8 @@ Text::CSV::Hashify object.
 
 sub new {
     my ($class, $args) = @_;
+    my %data;
+
     croak "Argument to 'new()' must be hashref"
         unless (ref($args) and reftype($args) eq 'HASH');
     for my $el ( qw| file key | ) {
@@ -201,24 +203,39 @@ sub new {
     }
     croak "Cannot locate file '$args->{file}'"
         unless (-f $args->{file});
+
+    $data{file} = delete $args->{file};
+    $data{key}  = delete $args->{key};
+
     if ($args->{format} and ($args->{format} !~ m/^(?:h|a)oh$/i) ) {
         croak "Entry '$args->{format}' for format is invalid'";
     }
     croak "Array of hashes not yet implemented"
-        if $args->{format} =~ m/aoh/i;
-    $args->{format} ||= 'hoh';
+        if ($args->{format} and ($args->{format}=~ m/aoh/i));
 
-    my %data;
+    $data{format} = delete $args->{format} || 'hoh';
 
-    my $csv = Text::CSV->new ( { binary => 1 } )
+    if (defined($args->{max_rows})) {
+        if ($args->{max_rows} !~ m/^\d+$/) {
+            croak "'max_rows' option, if defined, must be numeric";
+        }
+        else {
+            $data{max_rows} = delete $args->{max_rows};
+        }
+    }
+    # We've now handled all the Text::CSV::Hashify::new-specific options.
+    # Any remaining options are assumed to be intended for Text::CSV::new().
+
+    $args->{binary} = 1;
+    my $csv = Text::CSV->new ( $args )
         or croak "Cannot use CSV: ".Text::CSV->error_diag ();
-    open my $IN, "<:encoding(utf8)", $args->{file}
-        or croak "Unable to open '$args->{file}' for reading";
+    open my $IN, "<:encoding(utf8)", $data{file}
+        or croak "Unable to open '$data{file}' for reading";
     my $header_ref = $csv->getline($IN);
     my %header_fields_seen;
     for (@{$header_ref}) {
         if (exists $header_fields_seen{$_}) {
-            croak "Duplicate field '$_' observed in '$args->{file}'";
+            croak "Duplicate field '$_' observed in '$data{file}'";
         }
         else {
             $header_fields_seen{$_}++;
@@ -229,8 +246,8 @@ sub new {
     my %keys_seen;
     my @keys_list = ();
     my %parsed_data;
-    while (my $record = $csv->getline_hr($IN)) {
-        my $kk = $record->{$args->{key}};
+    PARSE_FILE: while (my $record = $csv->getline_hr($IN)) {
+        my $kk = $record->{$data{key}};
         if ($keys_seen{$kk}) {
             croak "Key '$kk' already seen";
         }
@@ -238,10 +255,18 @@ sub new {
             $keys_seen{$kk}++;
             push @keys_list, $kk;
             $parsed_data{$kk} = $record;
+            last PARSE_FILE if (
+                defined $data{max_rows} and
+                @keys_list == $data{max_rows}
+            );
         }
     }
     $data{all} = \%parsed_data;
     $data{keys} = \@keys_list;
+    $data{csv} = $csv;
+    while (my ($k,$v) = each %{$args}) {
+        $data{$k} = $v;
+    }
     return bless \%data, $class;
 }
 
@@ -426,6 +451,8 @@ This distribution inspired the C<max_rows> option to C<new()>.
 
 =cut
 
-
 1;
 
+__END__
+use Data::Dumper;$Data::Dumper::Indent=1;
+say STDERR Dumper \%data;
