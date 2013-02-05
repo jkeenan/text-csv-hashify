@@ -1,5 +1,8 @@
 Revision history for Perl module Text::CSV::Hashify
 
+0.04 Mon Feb 04 19:39:00 EST 2013
+    - Use 'use open' pragma per Nick Patch++ code review.
+
 0.03 Sun Dec 23 12:23:42 EST 2012
     - Get "format => 'aoh'" option working and tested.
 
