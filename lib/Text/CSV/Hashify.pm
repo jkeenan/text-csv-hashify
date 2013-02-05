@@ -3,11 +3,12 @@ use strict;
 use Carp;
 use Scalar::Util qw( reftype looks_like_number );
 use Text::CSV;
+use open qw( :encoding(UTF-8) :std );
 
 BEGIN {
     use Exporter ();
     use vars qw($VERSION @ISA @EXPORT);
-    $VERSION     = '0.03';
+    $VERSION     = '0.04';
     @ISA         = qw(Exporter);
     @EXPORT      = qw( hashify );
 }
@@ -262,7 +263,7 @@ sub new {
     $args->{binary} = 1;
     my $csv = Text::CSV->new ( $args )
         or croak "Cannot use CSV: ".Text::CSV->error_diag ();
-    open my $IN, "<:encoding(utf8)", $data{file}
+    open my $IN, "<", $data{file}
         or croak "Unable to open '$data{file}' for reading";
     my $header_ref = $csv->getline($IN);
     my %header_fields_seen;
