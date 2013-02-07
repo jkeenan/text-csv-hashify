@@ -8,16 +8,14 @@ use Test::More tests => 23;
 use lib ('./lib');
 use Text::CSV::Hashify;
 
-my ($obj, $source, $key, $k, $href, $aref, $z, $limit);
+my ($obj, $source, $k, $href, $aref, $z, $limit);
 
 {
     $source = "./t/data/dupe_key_names.csv";
-    $key = 'id';
     local $@;
     eval {
         $obj = Text::CSV::Hashify->new( {
             file    => $source,
-            key     => $key,
             format  => 'aoh',
         } );
     };
@@ -130,13 +128,11 @@ my ($obj, $source, $key, $k, $href, $aref, $z, $limit);
 
 {
     $source = "./t/data/dupe_key_names.csv";
-    $key = 'id';
     $limit = 4;
     local $@;
     eval {
         $obj = Text::CSV::Hashify->new( {
             file        => $source,
-            key         => $key,
             format      => 'aoh',
             max_rows    => $limit,
         } );

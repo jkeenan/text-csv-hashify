@@ -41,14 +41,16 @@ my ($obj, $source, $key, $k, $limit);
     $source = "./t/data/names.csv";
     $key = 'id';
     local $@;
+    $k = 'xyz';
     eval {
         $obj = Text::CSV::Hashify->new( {
             file    => $source,
+            key     => $key,
+            format  => $k,
         } );
     };
-    $k = 'key';
-    like($@, qr/^Argument to 'new\(\)' must have '$k' element/,
-        "'new()' died to lack of '$k' element in hashref argument");
+    like($@, qr/^Entry '$k' for format is invalid/,
+        "'new()' died due to bad argument for 'format' option");
 }
 
 {
@@ -66,6 +68,20 @@ my ($obj, $source, $key, $k, $limit);
 }
 
 {
+    $source = "./t/data/names.csv";
+    $key = 'id';
+    local $@;
+    eval {
+        $obj = Text::CSV::Hashify->new( {
+            file    => $source,
+        } );
+    };
+    $k = 'key';
+    like($@, qr/^Argument to 'new\(\)' must have 'key' element unless 'format' element is 'aoh'/,
+        "'new()' died to lack of 'key' element in hashref argument when 'format' element was not 'aoh'");
+}
+
+{
     $source = "./t/data/foobar";
     $key = 'id';
     local $@;
@@ -77,22 +93,6 @@ my ($obj, $source, $key, $k, $limit);
     };
     like($@, qr/^Cannot locate file '$source'/,
         "'new()' died because '$source' was not found");
-}
-
-{
-    $source = "./t/data/names.csv";
-    $key = 'id';
-    local $@;
-    $k = 'xyz';
-    eval {
-        $obj = Text::CSV::Hashify->new( {
-            file    => $source,
-            key     => $key,
-            format  => $k,
-        } );
-    };
-    like($@, qr/^Entry '$k' for format is invalid/,
-        "'new()' died due to bad argument for 'format' option");
 }
 
 {

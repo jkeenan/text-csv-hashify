@@ -8,7 +8,7 @@ use open qw( :encoding(UTF-8) :std );
 BEGIN {
     use Exporter ();
     use vars qw($VERSION @ISA @EXPORT);
-    $VERSION     = '0.04';
+    $VERSION     = '0.05';
     @ISA         = qw(Exporter);
     @EXPORT      = qw( hashify );
 }
@@ -27,8 +27,8 @@ Text::CSV::Hashify - Turn a CSV file into a Perl hash
     use Text::CSV::Hashify;
     $obj = Text::CSV::Hashify->new( {
         file        => '/path/to/file.csv',
-        key         => 'id',
         format      => 'hoh', # hash of hashes, which is default
+        key         => 'id',  # needed except when format is 'aoh'
         max_rows    => 20,    # number of records to read; defaults to all
         ... # other key-value pairs possible for Text::CSV
     } );
@@ -174,13 +174,13 @@ Text::CSV::Hashify constructor.
 
     $obj = Text::CSV::Hashify->new( {
         file        => '/path/to/file.csv',
-        key         => 'id',
         format      => 'hoh', # hash of hashes, which is default
+        key         => 'id',  # needed except when format is 'aoh'
         max_rows    => 20,    # number of records to read; defaults to all
         ... # other key-value pairs possible for Text::CSV
     } );
 
-Single hash reference.  Required elements are:
+Single hash reference.  Required element is:
 
 =over 4
 
@@ -188,9 +188,16 @@ Single hash reference.  Required elements are:
 
 String: path to CSV file serving as input.
 
+=back
+
+Element usually needed:
+
+=over 4
+
 =item * C<key>
 
-String: name of field in CSV file serving as unique key.
+String: name of field in CSV file serving as unique key.  Needed except when
+optional element C<format> is C<aoh>.
 
 =back
 
@@ -233,21 +240,20 @@ sub new {
 
     croak "Argument to 'new()' must be hashref"
         unless (ref($args) and reftype($args) eq 'HASH');
-    for my $el ( qw| file key | ) {
-        croak "Argument to 'new()' must have '$el' element"
-            unless $args->{$el};
-    }
+    croak "Argument to 'new()' must have 'file' element" unless $args->{file};
     croak "Cannot locate file '$args->{file}'"
         unless (-f $args->{file});
-
     $data{file} = delete $args->{file};
-    $data{key}  = delete $args->{key};
 
     if ($args->{format} and ($args->{format} !~ m/^(?:h|a)oh$/i) ) {
         croak "Entry '$args->{format}' for format is invalid'";
     }
-
     $data{format} = delete $args->{format} || 'hoh';
+
+    if (! exists $args->{key} and $data{format} ne 'aoh') {
+        croak "Argument to 'new()' must have 'key' element unless 'format' element is 'aoh'";
+    }
+    $data{key}  = delete $args->{key};
 
     if (defined($args->{max_rows})) {
         if ($args->{max_rows} !~ m/^\d+$/) {
@@ -286,12 +292,12 @@ sub new {
     my @parsed_data;
 
     PARSE_FILE: while (my $record = $csv->getline_hr($IN)) {
-        my $kk = $record->{$data{key}};
-        if ($data{format} eq 'hoh' and $keys_seen{$kk}) {
-            croak "Key '$kk' already seen";
-        }
-        else {
-            if ($data{format} eq 'hoh') {
+        if ($data{format} eq 'hoh') {
+            my $kk = $record->{$data{key}};
+            if ($keys_seen{$kk}) {
+                croak "Key '$kk' already seen";
+            }
+            else {
                 $keys_seen{$kk}++;
                 push @keys_list, $kk;
                 $parsed_data{$kk} = $record;
@@ -300,13 +306,13 @@ sub new {
                     scalar(keys %parsed_data) == $data{max_rows}
                 );
             }
-            else { # format: 'aoh'
-                push @parsed_data, $record;
-                last PARSE_FILE if (
-                    defined $data{max_rows} and
-                    scalar(@parsed_data) == $data{max_rows}
-                );
-            }
+        }
+        else { # format: 'aoh'
+            push @parsed_data, $record;
+            last PARSE_FILE if (
+                defined $data{max_rows} and
+                scalar(@parsed_data) == $data{max_rows}
+            );
         }
     }
     $data{all} = ($data{format} eq 'aoh') ? \@parsed_data : \%parsed_data;
