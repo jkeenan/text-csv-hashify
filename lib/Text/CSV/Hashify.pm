@@ -1,5 +1,6 @@
 package Text::CSV::Hashify;
 use strict;
+use 5.8.0;
 use Carp;
 use Scalar::Util qw( reftype looks_like_number );
 use Text::CSV;
