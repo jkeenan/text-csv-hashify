@@ -331,19 +331,24 @@ sub new {
 
 =item * Purpose
 
-Get hash representation of CSV input file.
+Get a representation of all data found in a CSV input file.
 
 =item * Arguments
 
-    $hash_ref = $obj->all;
+    $hash_ref   = $obj->all; # when format is default or 'hoh'
+    $array_ref  = $obj->all; # when format is 'aoh'
 
 =item * Return Value
 
-Hash reference representing all data records in the CSV input file.
+Reference representing all data records in the CSV input file.  In the default
+case, or if you have specifically requested C<format => 'hoh'>, the return
+value is a hash reference.  When you have requested C<format => 'aoh'>, the
+return value is an array reference.
 
 =item * Comment
 
-Return value is equivalent to that of C<hashify()>.
+In the default (C<hoh>) case, the return value is equivalent to that of
+C<hashify()>.
 
 =back
 
