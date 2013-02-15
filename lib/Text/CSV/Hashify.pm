@@ -257,7 +257,7 @@ sub new {
     $data{key}  = delete $args->{key};
 
     if (defined($args->{max_rows})) {
-        if ($args->{max_rows} !~ m/^\d+$/) {
+        if ($args->{max_rows} !~ m/^[0-9]+$/) {
             croak "'max_rows' option, if defined, must be numeric";
         }
         else {

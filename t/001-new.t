@@ -2,9 +2,10 @@
 # t/001-new.t - check constructor
 use strict;
 use warnings;
+use utf8;
 use Carp;
 use Scalar::Util qw( reftype looks_like_number );
-use Test::More tests => 24;
+use Test::More tests => 26;
 use lib ('./lib');
 use Text::CSV::Hashify;
 
@@ -110,6 +111,38 @@ my ($obj, $source, $key, $k, $limit);
             # "'max_rows' option, if defined, must be numeric";
     like($@, qr/^'max_rows' option, if defined, must be numeric/,
         "'max_rows' option to new() must be numeric");
+}
+
+{
+    $source = "./t/data/names.csv";
+    $key = 'id';
+    $limit = '٤٠'; # 40 in Eastern Arabic numerals
+    local $@;
+    eval {
+        $obj = Text::CSV::Hashify->new( {
+            file        => $source,
+            key         => $key,
+            max_rows    => $limit,
+        } );
+    };
+    like($@, qr/^'max_rows' option, if defined, must be numeric/,
+        "'max_rows' option to new() must be in Western Arabic numerals");
+}
+
+{
+    $source = "./t/data/names.csv";
+    $key = 'id';
+    $limit = '2٧'; # Western Arabic 2 followed by Eastern Arabic 7
+    local $@;
+    eval {
+        $obj = Text::CSV::Hashify->new( {
+            file        => $source,
+            key         => $key,
+            max_rows    => $limit,
+        } );
+    };
+    like($@, qr/^'max_rows' option, if defined, must be numeric/,
+        "'max_rows' option to new() must be only in Western Arabic numerals");
 }
 
 {
