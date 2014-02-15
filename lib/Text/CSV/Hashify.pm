@@ -9,7 +9,7 @@ use open qw( :encoding(UTF-8) :std );
 BEGIN {
     use Exporter ();
     use vars qw($VERSION @ISA @EXPORT);
-    $VERSION     = '0.05';
+    $VERSION     = '0.06';
     @ISA         = qw(Exporter);
     @EXPORT      = qw( hashify );
 }
@@ -69,8 +69,8 @@ comma.
 Text::CSV::Hashify is designed for the case where you simply want to turn a
 CSV file into a Perl hash.  In particular, it is designed for the case where
 (a) the CSV file's first record is a list of fields in the ancestral database
-table and (b) one field (column) of which functions as a B<primary key>,
-I<i.e.,> each record's entry in that field is distinct from every other
+table and (b) one field (column) functions as a B<primary key>, I<i.e.,> each
+record's entry in that field is non-null and is distinct from every other
 record's entry therein.
 
 Text::CSV::Hashify turns that kind of CSV file into one big hash of hashes.

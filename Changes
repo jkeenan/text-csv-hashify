@@ -1,5 +1,9 @@
 Revision history for Perl module Text::CSV::Hashify
 
+0.06 Sat Feb 15 17:22:10 EST 2014
+    - Documentation change only.  Clarify requirement for a field to serve
+      as a primary key.
+
 0.05 Fri Feb 08 20:39:00 EST 2013
     - Code and documentation revisions in response to tickets 83168 and 83169
       at https://rt.cpan.org/Dist/Display.html?Queue=Text-CSV-Hashify
