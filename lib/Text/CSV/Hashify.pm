@@ -9,7 +9,7 @@ use open qw( :encoding(UTF-8) :std );
 BEGIN {
     use Exporter ();
     use vars qw($VERSION @ISA @EXPORT);
-    $VERSION     = '0.06';
+    $VERSION     = '0.07';
     @ISA         = qw(Exporter);
     @EXPORT      = qw( hashify );
 }
@@ -508,7 +508,12 @@ it and/or modify it under the same terms as Perl itself.
 The full text of the license can be found in the
 LICENSE file included with this module.
 
-Copyright 2012, James E Keenan.  All rights reserved.
+Copyright 2012-15, James E Keenan.  All rights reserved.
+
+=head1 ACKNOWLEDGEMENTS
+
+Thanks to Christine Shieh for serving as the alpha consumer of this
+library's output.
 
 =head1 OTHER CPAN DISTRIBUTIONS
 
@@ -532,6 +537,3 @@ This distribution inspired the C<max_rows> option to C<new()>.
 
 1;
 
-__END__
-use Data::Dumper;$Data::Dumper::Indent=1;
-say STDERR Dumper \%data;
