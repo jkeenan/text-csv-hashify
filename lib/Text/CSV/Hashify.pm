@@ -510,6 +510,18 @@ LICENSE file included with this module.
 
 Copyright 2012-15, James E Keenan.  All rights reserved.
 
+=head1 INSTALLATION
+
+To install:
+
+    perl Makefile.PL
+    make
+    make test
+    make install
+
+If you are on a windows box you should use 'nmake' rather than 'make'.
+
+
 =head1 ACKNOWLEDGEMENTS
 
 Thanks to Christine Shieh for serving as the alpha consumer of this
