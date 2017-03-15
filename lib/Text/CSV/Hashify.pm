@@ -510,6 +510,17 @@ LICENSE file included with this module.
 
 Copyright 2012-15, James E Keenan.  All rights reserved.
 
+=head1 BUGS
+
+There are no bug reports outstanding on Text::CSV::Hashify as of the most recent
+CPAN upload date of this distribution.
+
+=head1 SUPPORT
+
+To report any bugs or make any feature requests, please send mail to
+C<bug-Text-CSV-Hashify@rt.cpan.org> or use the web interface at
+L<http://rt.cpan.org>.
+
 =head1 ACKNOWLEDGEMENTS
 
 Thanks to Christine Shieh for serving as the alpha consumer of this
