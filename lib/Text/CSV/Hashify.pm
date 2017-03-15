@@ -9,7 +9,7 @@ use open qw( :encoding(UTF-8) :std );
 BEGIN {
     use Exporter ();
     use vars qw($VERSION @ISA @EXPORT);
-    $VERSION     = '0.07';
+    $VERSION     = '0.08';
     @ISA         = qw(Exporter);
     @EXPORT      = qw( hashify );
 }
@@ -17,6 +17,11 @@ BEGIN {
 =head1 NAME
 
 Text::CSV::Hashify - Turn a CSV file into a Perl hash
+
+=head1 VERSION
+
+This document refers to version 0.08 of Text::CSV::Hashify.  This version was
+released March 15 2017.
 
 =head1 SYNOPSIS
 
@@ -508,7 +513,7 @@ it and/or modify it under the same terms as Perl itself.
 The full text of the license can be found in the
 LICENSE file included with this module.
 
-Copyright 2012-15, James E Keenan.  All rights reserved.
+Copyright 2012-2017, James E Keenan.  All rights reserved.
 
 =head1 BUGS
 

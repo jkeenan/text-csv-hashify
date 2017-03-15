@@ -33,3 +33,4 @@ svndiff/
 \.git/
 MYMETA.yml$
 MYMETA.json$
+.version_info.pl
