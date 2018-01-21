@@ -11,7 +11,7 @@ use open qw( :encoding(UTF-8) :std );
 BEGIN {
     use Exporter ();
     use vars qw($VERSION @ISA @EXPORT);
-    $VERSION     = '0.09';
+    $VERSION     = '0.10';
     @ISA         = qw(Exporter);
     @EXPORT      = qw( hashify );
 }
@@ -22,7 +22,7 @@ Text::CSV::Hashify - Turn a CSV file into a Perl hash
 
 =head1 VERSION
 
-This document refers to version 0.09 of Text::CSV::Hashify.  This version was
+This document refers to version 0.10 of Text::CSV::Hashify.  This version was
 released Janaury 21 2018.
 
 =head1 SYNOPSIS
@@ -177,7 +177,11 @@ or
 
 Function takes two arguments:  path to CSV file; field in that file which
 serves as primary key.  If the path to the input file ends in F<.gz>, it is
-assumed to be compressed by F<gzip>.
+assumed to be compressed by F<gzip>.  If the file name ends in F<.psv> (or
+F<.psv.gz>), the separator character is assumed to be a pipe (C<|>).  If the
+file name ends in F<.tsv> (or F<.tsv.gz>), the separator character is assumed
+to be a tab (C<	>).  Otherwise, the separator character will be assumed to be
+a comma (C<,>).
 
 Returns a reference to a hash of hash references.
 
@@ -190,10 +194,17 @@ sub hashify {
     for (my $i=0;$i<=$#args;$i++) {
         croak "'hashify()' argument at index '$i' not true" unless $args[$i];
     }
-    my $obj = Text::CSV::Hashify->new( {
+    my %obj_args = (
         file    => $args[0],
         key     => $args[1],
-    } );
+    );
+    $obj_args{sep_char} =
+        ($obj_args{file} =~ m/\.psv(\.gz)?$/)
+            ? '|'
+            : ($obj_args{file} =~ m/\.tsv(\.gz)?$/)
+                ? "\t"
+                : ',';
+    my $obj = Text::CSV::Hashify->new( \%obj_args );
     return $obj->all();
 }
 

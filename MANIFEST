@@ -12,6 +12,12 @@ t/003-methods.t
 t/004-passthru.t
 t/005-aoh.t
 t/006-gzipped-input.t
+t/data/cpan-river.csv
+t/data/cpan-river.csv.gz
+t/data/cpan-river.psv
+t/data/cpan-river.psv.gz
+t/data/cpan-river.tsv
+t/data/cpan-river.tsv.gz
 t/data/dupe_field_names.csv
 t/data/dupe_key_names.csv
 t/data/names.csv
