@@ -2,6 +2,8 @@ package Text::CSV::Hashify;
 use strict;
 use 5.8.0;
 use Carp;
+use IO::File;
+use IO::Zlib;
 use Scalar::Util qw( reftype looks_like_number );
 use Text::CSV;
 use open qw( :encoding(UTF-8) :std );
@@ -275,8 +277,15 @@ sub new {
     $args->{binary} = 1;
     my $csv = Text::CSV->new ( $args )
         or croak "Cannot use CSV: ".Text::CSV->error_diag ();
-    open my $IN, "<", $data{file}
-        or croak "Unable to open '$data{file}' for reading";
+    my $IN;
+    if ($data{file} =~ m/\.gz$/) {
+        $IN = IO::Zlib->new($data{file}, "rb");
+    }
+    else {
+        $IN = IO::File->new($data{file}, "r");
+    }
+    croak "Unable to open '$data{file}' for reading"
+        unless defined $IN;
     my $header_ref = $csv->getline($IN);
     my %header_fields_seen;
     for (@{$header_ref}) {
@@ -321,6 +330,7 @@ sub new {
             );
         }
     }
+    $IN->close or croak "Unable to close $data{file} after reading";
     $data{all} = ($data{format} eq 'aoh') ? \@parsed_data : \%parsed_data;
     $data{keys} = \@keys_list if $data{format} eq 'hoh';
     $data{csv} = $csv;
