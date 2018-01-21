@@ -36,4 +36,6 @@ MYMETA.json$
 .version_info.pl
 \.gitignore
 \.travis.yml
+^README.md
+^.README.pod
 \.appveyor.yml

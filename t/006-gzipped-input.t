@@ -6,7 +6,7 @@ use utf8;
 use Carp;
 use Scalar::Util qw( reftype looks_like_number );
 use Text::CSV::Hashify;
-use Test::More tests => 15;
+use Test::More tests => 19;
 
 my ($obj, $source, $key, $k, $limit);
 
@@ -25,6 +25,18 @@ my ($obj, $source, $key, $k, $limit);
     ok($obj, "'new()' returned true value");
     isa_ok($obj, 'Text::CSV::Hashify');
     is(reftype($obj->{all}), 'HASH', "Record data stored as hash");
+
+    # functional interface can only handle CSV -- no PSV
+    my $href;
+    $source = "./t/data/xformat-cpan-river-1000-perl-5.27-master.csv.gz";
+    $key = 'dist';
+    local $@;
+    eval { $href = hashify($source, $key); };
+    is($@, '', "'hashify()' completed without error");
+    ok($href, "'hashify()' returned true value");
+    is(reftype($href), 'HASH', "'hashify()' returned hash reference");
+    cmp_ok(scalar @{$obj->keys}, '==', scalar keys %{$href},
+        "Functional interface returned same number of elements as OO-interface");
 }
 
 {   # Correct call to new() with 'max_rows' option

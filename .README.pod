@@ -1,34 +1,43 @@
-# Text-CSV-Hashify
+=head1 Text-CSV-Hashify
 
 Turn a CSV file into a Perl hash
 
-## Description
+=head2 Description
 
 The Comma-Separated-Value ('CSV') format is the most common way to store
 spreadsheets or the output of relational database queries in plain-text
 format.  However, since commas (or other designated field-separator
 characters) may be embedded within data entries, the parsing of delimited
 records is non-trivial.  Fortunately, in Perl this parsing is well handled by
-CPAN distribution [Text::CSV](http://search.cpan.org/dist/Text-CSV/).  This
+CPAN distribution L<Text::CSV|http://search.cpan.org/dist/Text-CSV/>.  This
 permits us to address more specific data manipulation problems by building
-modules on top of `Text::CSV`.
+modules on top of F<Text::CSV>.
 
-`Text::CSV::Hashify` is designed for the case where you simply want to turn a
+F<Text::CSV::Hashify> is designed for the case where you simply want to turn a
 CSV file into a Perl hash.  In particular, it is designed for the case where:
 
-- the CSV file's first record is a list of fields in the
+=over 4
+
+=item *
+
+the CSV file's first record is a list of fields in the
 ancestral database table; and
-- one field (column) functions as a primary key, _i.e.,_ each record's entry in
+
+=item *
+
+one field (column) functions as a primary key, I<i.e.,> each record's entry in
 that field is non-null and is distinct from every other record's entry
 therein.
 
-`Text::CSV::Hashify` turns that kind of CSV file into one big hash of hashes.
+=back
 
-`Text::CSV::Hashify` can handle less typical cases; please consult the
-documentation for its other functionalities.  `Text::CSV::Hashify` can now
-take gzip-compressed (`.gz`) files as input as well as uncompressed files.
+F<Text::CSV::Hashify> turns that kind of CSV file into one big hash of hashes.
 
-## Installation
+F<Text::CSV::Hashify> can handle less typical cases; please consult the
+documentation for its other functionalities.  F<Text::CSV::Hashify> can now
+take gzip-compressed (F<.gz>) files as input as well as uncompressed files.
+
+=head2 Installation
 
 To install:
 
@@ -38,3 +47,5 @@ To install:
     make install
 
 If you are on a windows box you should use 'nmake' rather than 'make'.
+
+=cut
