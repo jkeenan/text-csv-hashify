@@ -1,4 +1,3 @@
-.gitignore
 Changes
 lib/Text/CSV/Hashify.pm
 LICENSE
@@ -12,9 +11,11 @@ t/002-functional.t
 t/003-methods.t
 t/004-passthru.t
 t/005-aoh.t
+t/006-gzipped-input.t
 t/data/dupe_field_names.csv
 t/data/dupe_key_names.csv
 t/data/names.csv
 t/data/pipe_names.csv
 t/data/whitespace_names.csv
+t/data/xformat-cpan-river-1000-perl-5.27-master.psv.gz
 Todo

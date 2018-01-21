@@ -34,3 +34,6 @@ svndiff/
 MYMETA.yml$
 MYMETA.json$
 .version_info.pl
+\.gitignore
+\.travis.yml
+\.appveyor.yml
