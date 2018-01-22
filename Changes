@@ -1,5 +1,9 @@
 Revision history for Perl module Text::CSV::Hashify
 
+0.10 Sun Jan 21 19:12:27 EST 2018
+    - Provide support for .psv and .tsv (pipe- and tab-separated input)
+      in functional interface.
+
 0.09 Sun Jan 21 10:16:52 EST 2018
     - Provide support for gzipped input files.
 
