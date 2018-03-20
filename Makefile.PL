@@ -8,6 +8,7 @@ WriteMakefile(
     VERSION_FROM    => 'lib/Text/CSV/Hashify.pm',
     AUTHOR          => 'James E Keenan (jkeenan@cpan.org)',
     ABSTRACT        => 'Turn a CSV file into a Perl hash',
+    LICENSE         => 'perl_5',
     PREREQ_PM       =>  {
                         'Text::CSV' => 0,
                         },
