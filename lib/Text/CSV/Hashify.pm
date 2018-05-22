@@ -305,9 +305,15 @@ sub new {
     }
     $data{format} = delete $args->{format} || 'hoh';
 
+    if (exists $args->{key}) {
+        croak "Value for 'key' must be non-empty string"
+            unless defined $args->{key} and length($args->{key});
+    }
+
     if (! exists $args->{key} and $data{format} ne 'aoh') {
         croak "Argument to 'new()' must have 'key' element unless 'format' element is 'aoh'";
     }
+
     $data{key}  = delete $args->{key};
 
     if (defined($args->{max_rows})) {
@@ -343,6 +349,11 @@ sub new {
             $header_fields_seen{$_}++;
         }
     }
+    if ($data{format} eq 'hoh') {
+        croak "Key '$data{key}' not found in header row"
+            unless $header_fields_seen{$data{key}};
+    }
+
     $data{fields} = $header_ref;
     $csv->column_names(@{$header_ref});
 
