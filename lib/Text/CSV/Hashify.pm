@@ -38,7 +38,7 @@ released Janaury 21 2018.
         format      => 'hoh', # hash of hashes, which is default
         key         => 'id',  # needed except when format is 'aoh'
         max_rows    => 20,    # number of records to read; defaults to all
-        ... # other key-value pairs possible for Text::CSV
+        ... # other key-value pairs as appropriate from Text::CSV
     } );
 
     # all records requested
@@ -141,7 +141,12 @@ the CSV file.  This includes:
 =item * Text::CSV options
 
 Access to any of the options available to Text::CSV, such as use of a
-separator character other than a comma.
+separator character other than a comma.  B<Note:>  Much of the time you will
+not need any of the Text::CSV options.  Text::CSV::Hashify is focused on
+B<reading> CSV files, whereas Text::CSV is focused on both reading and
+B<writing> CSV files.  Some Text::CSV options, such as C<eol>, are unlikely to
+be needed when using Text::CSV::Hashify.  Hence, you should be very selective
+in your use of Text::CSV options.
 
 =item * Limit number of records
 
@@ -225,7 +230,7 @@ Text::CSV::Hashify constructor.
         format      => 'hoh', # hash of hashes, which is default
         key         => 'id',  # needed except when format is 'aoh'
         max_rows    => 20,    # number of records to read; defaults to all
-        ... # other key-value pairs possible for Text::CSV
+        ... # other key-value pairs as appropriate from Text::CSV
     } );
 
 Single hash reference.  Required element is:
@@ -269,7 +274,8 @@ greater than or equal to the number of data records in the CSV file.)
 
 =item * Any option available to Text::CSV
 
-See documentation for either Text::CSV or Text::CSV_XS.
+See documentation for either Text::CSV or Text::CSV_XS, but see discussion of
+"Text::CSV options" above.
 
 =back
 
