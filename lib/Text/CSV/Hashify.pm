@@ -10,7 +10,7 @@ use open qw( :encoding(UTF-8) :std );
 
 BEGIN {
     use Exporter ();
-    use vars qw($VERSION @ISA @EXPORT);
+    our ($VERSION, @ISA, @EXPORT);
     $VERSION     = '0.10';
     @ISA         = qw(Exporter);
     @EXPORT      = qw( hashify );
